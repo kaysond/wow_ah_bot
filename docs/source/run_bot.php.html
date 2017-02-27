@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+/**
+ * run_bot.php is an example script to construct and run wow_ah_bot
+ *
+ * Copyright (C) 2016 Aram Akhavan &lt;kaysond@hotmail.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ *
+ * @package wow_ah_bot
+ * @author  Aram Akhavan &lt;kaysond@hotmail.com&gt;
+ * @link    https://github.com/kaysond/wow_ah_bot
+ * @copyright 2016 Aram Akhavan
+ */
+namespace wow_ah_bot;
+
+require_once(&quot;wow_ah_bot.class.php&quot;);
+
+$browser = array(
+	&quot;useragent&quot;      =&gt; &quot;Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0&quot;,
+	&quot;language&quot;       =&gt; &quot;en-US&quot;,
+	&quot;resolution&quot;     =&gt; array(1080, 1920),
+	&quot;timezoneoffset&quot; =&gt; 420,
+	&quot;randomseed&quot;     =&gt; &quot;somesalt&quot;,
+	&quot;headers&quot;        =&gt; &quot;Accept-Language: en-US,en;q=0.5\nDNT: 1&quot;
+);
+
+try {
+	$wow_ah_bot = new wow_ah_bot(&quot;config.json&quot;, &quot;log.txt&quot;, &quot;cookiefile.txt&quot;, &quot;apilog.txt&quot;, $browser, &quot;127.0.0.1&quot;, &quot;wow_ah&quot;, &quot;wow_ah&quot;, &quot;wow_ah&quot;);
+}
+catch (Exception $e) {
+	die(&quot;Error constructing bot: &quot; . implode(&quot; &quot;, $e-&gt;getAllMessages()) . &quot;\n&quot;);
+}
+
+try {
+	$wow_ah_bot-&gt;run();
+}
+catch (Exception $e) {
+	$wow_ah_bot-&gt;close();
+	die(&quot;Killing bot due to error: &quot; . implode(&quot; &quot;, $e-&gt;getAllMessages()) . &quot;\n&quot;);
+}
+
+?&gt;</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

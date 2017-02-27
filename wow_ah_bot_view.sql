@@ -1,0 +1,1 @@
+CREATE VIEW `times` AS select distinct `auctions`.`first_seen` AS `time` from `auctions` union select distinct `auctions`.`last_seen` AS `last_seen` from `auctions`;

@@ -1,0 +1,39 @@
+{"bot":{
+	"character":"leeroyjenkins-sargeras",
+	"bnet_username":"leeroy",
+	"bnet_password":"jenkins",
+	"region":"us",
+	"lang":"en",
+	"run":true,
+	"search_interval":5,
+	"store_to_db":true,
+	"send_notifications":true,
+	"notification_interval":60
+	},
+"searches":[
+	{"name":"fjarnskaggl","category":"5,122","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1},
+	{"name":"dreamleaf","category":"5,122","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1},
+	{"name":"foxflower","category":"5,122","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1},
+	{"name":"felwort","category":"5,122","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1},
+	{"name":"starlight rose","category":"5,122","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1},
+	{"name":"aethril","category":"5,122","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1},
+	{"name":"flask of ten thousand scars","category":"-1","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1},
+	{"name":"flask of the whispered pact","category":"-1","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1},
+	{"name":"flask of the seventh demon","category":"-1","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1},
+	{"name":"flask of the countless armies","category":"-1","minlevel":-1,"maxlevel":-1,"quality":1,"sort":"unitBuyout","reverse":false,"limit":-1}
+	],
+"notifications":[
+	{"name":"starlight rose","metric":"min","param":"unitBuyout","comparison":"<=","value":400000},
+	{"name":"felwort","metric":"min","param":"unitBuyout","comparison":"<=","value":2500000},
+	{"name":"flask of ten thousand scars","metric":"min","param":"unitBuyout","comparison":"<=","value":7000000},
+	{"name":"flask of the countless armies","metric":"min","param":"unitBuyout","comparison":"<=","value":8000000},
+	{"name":"flask of the whispered pact","metric":"min","param":"unitBuyout","comparison":"<=","value":8000000},
+	{"name":"flask of the seventh demon","metric":"min","param":"unitBuyout","comparison":"<=","value":8000000}
+	],
+"notification_list":[
+	{"type":"nma","identifier":"c19aaa1410771231214d8be725aff75e50baf6c0677b8c51cf9"},
+	{"type":"prowl","identifier":"c19aaa1410771231214d8be725aff75e50baf6c0677b8c51cf9"},
+	{"type":"custom","identifier":"http://www.yoururl.com/api/?message=%s"},
+	{"type":"email","identifier":"leeroy@us.battle.net"}
+	]
+}

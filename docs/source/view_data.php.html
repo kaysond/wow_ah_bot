@@ -1,0 +1,165 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+/**
+ * view_data.php is a web page that allows easy viewing of mysql database auction data.
+ *
+ * This page provides both the frontend and backend. The front end comes from resources/html/view_data.html
+ * and resources/js/view_data.js. plotly and jquery are used to show graph the data. Requests are sent from the
+ * front end to this php for data. The mysql query for data over time has been highly optimized for speed. The
+ * raw data is sent back to the front end and processed (i.e. filtered) using javascript before graphing.
+ *
+ * Copyright (C) 2016 Aram Akhavan &lt;kaysond@hotmail.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ *
+ * @package wow_ah_bot
+ * @author  Aram Akhavan &lt;kaysond@hotmail.com&gt;
+ * @link    https://github.com/kaysond/wow_ah_bot
+ * @copyright 2016 Aram Akhavan
+ * @todo Improve error handling on request validation
+ */
+
+if (!isset($_REQUEST[&quot;action&quot;])) {
+	echo file_get_contents(&quot;resources/html/view_data.html&quot;);
+	exit();
+}
+else {
+	$mysqli = new mysqli(&quot;127.0.0.1&quot;, &quot;wow_ah_read&quot;, &quot;wow_ah_read&quot;, &quot;wow_ah&quot;);
+	$mysqli-&gt;set_charset(&quot;utf8&quot;);
+
+	switch($_REQUEST[&quot;action&quot;]) {
+		case &quot;get_items&quot;:
+			header(&quot;Content-Type: application/json&quot;);
+			$query = &quot;SELECT DISTINCT `item`,`item_id` FROM auctions ORDER BY `item`&quot;;
+			if ($result = $mysqli-&gt;query($query)) {
+				echo json_encode($result-&gt;fetch_all());
+			}
+			else {
+				echo '{&quot;error&quot;: &quot;Error submitting query: ' . $query . &quot; - &quot; . $mysqli-&gt;error . '&quot;}';
+			}
+			break;
+		case &quot;get_data&quot;:
+			header(&quot;Content-Type: application/json&quot;);
+			$error = &quot;&quot;;
+			$validation = array(
+							&quot;function&quot;            =&gt; array(&quot;min&quot;, &quot;max&quot;, &quot;avg&quot;, &quot;stddev&quot;),
+							&quot;parameter&quot;           =&gt; array(&quot;unitBuyout&quot;, &quot;buyout&quot;, &quot;unitBid&quot;, &quot;bid&quot;, &quot;quantity&quot;),
+							&quot;condition_parameter&quot; =&gt; array(&quot;none&quot;, &quot;unitBuyout&quot;, &quot;buyout&quot;, &quot;unitBid&quot;, &quot;bid&quot;, &quot;quantity&quot;, &quot;last_time&quot;),
+							&quot;comparison&quot;          =&gt; array(&quot;lt&quot;, &quot;gt&quot;, &quot;lte&quot;, &quot;gte&quot;, &quot;eq&quot;, &quot;neq&quot;)
+							);
+			foreach ($validation as $paramname =&gt; $options) {
+				if (!isset($_REQUEST[$paramname])) {
+					$error = &quot;Missing request parameters.&quot;;
+					break;
+				}
+				else if (!in_array($_REQUEST[$paramname], $options)) {
+					$error = &quot;Invalid option specified for: $paramname.&quot;;
+					break;
+				}
+			}
+			if ($_REQUEST[&quot;condition_parameter&quot;] == &quot;last_time&quot; &amp;&amp; (!isset($_REQUEST[&quot;last_time&quot;]) || !in_array($_REQUEST[&quot;last_time&quot;], array(&quot;Short&quot;, &quot;Medium&quot;, &quot;Long&quot;, &quot;Very long&quot;))))
+				$error = &quot;Invalid time specified.&quot;;
+
+			if (!isset($_REQUEST[&quot;item_id&quot;]))
+				$error = &quot;No item name specified.&quot;;
+			else
+				$item_id = $mysqli-&gt;real_escape_string($_REQUEST[&quot;item_id&quot;]);
+
+			if ($error != &quot;&quot;) {
+				echo '{&quot;error&quot;: &quot;' . $error . '&quot;}';
+				exit();
+			}
+
+			$query = &quot;SELECT unix_timestamp(t.time), {$_REQUEST[&quot;function&quot;]}(`a`.`{$_REQUEST[&quot;parameter&quot;]}`) FROM (SELECT &quot;;
+			if ($_REQUEST[&quot;parameter&quot;] != &quot;avg&quot; &amp;&amp; $_REQUEST[&quot;parameter&quot;] != &quot;stddev&quot;)
+				$query .= &quot;DISTINCT &quot;;
+			$query .= &quot;{$_REQUEST[&quot;parameter&quot;]}, `first_seen`, `last_seen` FROM `auctions` WHERE `item_id` = '$item_id' AND `first_seen` &gt; DATE_SUB(CURRENT_DATE(), INTERVAL 2 WEEK)&quot;;
+			if ($_REQUEST[&quot;condition_parameter&quot;] != &quot;none&quot;) {
+				$comparisons = array(&quot;lt&quot; =&gt; &quot;&lt;&quot;, &quot;gt&quot; =&gt; &quot;&gt;&quot;, &quot;lte&quot; =&gt; &quot;&lt;=&quot;, &quot;gte&quot; =&gt; &quot;&gt;=&quot;, &quot;eq&quot; =&gt; &quot;=&quot;, &quot;neq&quot; =&gt; &quot;!=&quot;);
+				$query .= &quot; AND `&quot; . $_REQUEST[&quot;condition_parameter&quot;] . &quot;` &quot; . $comparisons[$_REQUEST[&quot;comparison&quot;]] . &quot; &quot;;
+				if ($_REQUEST[&quot;condition_parameter&quot;] == &quot;last_time&quot;)
+					$query .= &quot;\&quot;{$_REQUEST[&quot;last_time&quot;]}\&quot;&quot;;
+				else if ($_REQUEST[&quot;condition_parameter&quot;] == &quot;quantity&quot;)
+					$query .= intval($_REQUEST[&quot;quantity&quot;]);
+				else
+					$query .= 10000 * intval($_REQUEST[&quot;gold&quot;]) + 100 * intval($_REQUEST[&quot;silver&quot;]) + intval($_REQUEST[&quot;copper&quot;]);
+			}
+			else if ($_REQUEST[&quot;parameter&quot;] == &quot;buyout&quot; || $_REQUEST[&quot;parameter&quot;] = &quot;unitBuyout&quot;) {
+				$query .= &quot; AND `unitBuyout` &gt; 0&quot;; //ignore bid only auctions
+			}
+			$query .= &quot;) `a` JOIN (SELECT `time` FROM `times`) `t` ON (a.first_seen = t.time OR a.last_seen = t.time) AND a.first_seen &lt;= t.time AND a.last_seen &gt;= t.time GROUP BY `time` ORDER BY `time`&quot;;
+			if ($result = $mysqli-&gt;query($query)) {
+				$output = $result-&gt;fetch_all();
+				if (count($output) &gt; 0)
+					echo json_encode(array_map(null, ...$output));
+				else
+					echo '{&quot;error&quot;: &quot;No results found.&quot;}';
+			}
+			else {
+				echo '{&quot;error&quot;: &quot;Error submitting query: ' . $query . &quot; - &quot; . $mysqli-&gt;error . '&quot;}';
+			}
+			break;
+		default:
+			break;
+	}
+
+	$mysqli-&gt;close();
+}
+
+
+?&gt;
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

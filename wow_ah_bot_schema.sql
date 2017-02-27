@@ -1,0 +1,20 @@
+  CREATE TABLE `auctions` (
+  `id` int(11) NOT NULL,
+  `item` varchar(70) NOT NULL,
+  `item_id` mediumint(9) NOT NULL,
+  `seller` varchar(15) NOT NULL,
+  `quantity` smallint(6) NOT NULL,
+  `first_seen` datetime NOT NULL,
+  `last_seen` datetime NOT NULL,
+  `first_time` enum('Short','Medium','Long','Very long') NOT NULL,
+  `last_time` enum('Short','Medium','Long','Very long') NOT NULL,
+  `bid` bigint(20) NOT NULL,
+  `unitBid` bigint(20) NOT NULL,
+  `buyout` bigint(20) NOT NULL,
+  `unitBuyout` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `idx_auctions_first_seen` (`first_seen`),
+  KEY `idx_auctions_last_seen` (`last_seen`),
+  KEY `idx_items_ids` (`item`,`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

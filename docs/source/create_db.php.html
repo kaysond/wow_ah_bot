@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php"> &lt;?php
+/**
+ * create_db.php sets up the database for storing searches executed by wow_ah_bot
+ *
+ * Adds one `auctions` table and a `times` view for fast viewing of collected data
+ * The query is in wow_ah_bot_schema.sql
+ *
+ * Copyright (C) 2016 Aram Akhavan &lt;kaysond@hotmail.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ *
+ * @package wow_ah_bot
+ * @author  Aram Akhavan &lt;kaysond@hotmail.com&gt;
+ * @link    https://github.com/kaysond/wow_ah_bot
+ * @copyright 2016 Aram Akhavan
+ */
+
+define(&quot;MYSQL_HOST&quot;, &quot;127.0.0.1&quot;);
+define(&quot;MYSQL_USER&quot;, &quot;wow_ah&quot;);
+define(&quot;MYSQL_PASS&quot;, &quot;wow_ah&quot;);
+define(&quot;MYSQL_DB&quot;, &quot;wow_ah&quot;);
+
+echo &quot;Connecting to mysql database...\n&quot;;
+
+mysqli_report(MYSQLI_REPORT_ALL);
+$mysqli = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB);
+if ($mysqli-&gt;connect_errno)
+	die(&quot;Failed to connect to database. Error code: {$mysqli-&gt;connect_error}.\n&quot;);
+$mysqli-&gt;set_charset(&quot;utf8&quot;);
+
+try {
+	echo &quot;Creating database table...\n&quot;;
+	$query = file_get_contents(&quot;wow_ah_bot_schema.sql&quot;);
+	$result = $mysqli-&gt;query($query);
+	if (!$result)
+		die(&quot;Query error while creating database: &quot; . $mysqli-&gt;error . &quot;\n&quot;);
+	
+	echo &quot;Creating view...\n&quot;;
+	$query = file_get_contents(&quot;wow_ah_bot_view.sql&quot;);
+	$result = $mysqli-&gt;query($query);
+	if (!$result)
+		die(&quot;Query error while creating view: &quot; . $mysqli-&gt;error . &quot;\n&quot;);
+}
+catch (mysqli_sql_exception $e) {
+	die(&quot;Could not create table or view. Caught exception: &quot; . $e-&gt;getMessage());
+}
+catch (Exception $e) {
+	die(&quot;Unhandled exception: &quot; . $e-&gt;getMessage());
+}
+
+echo &quot;Done.\n&quot;;
+
+?&gt;</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

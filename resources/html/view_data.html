@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta charset="utf-8" />
+<title>View Data</title>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="resources/javascript/view_data.js"></script>
+</head>
+
+<body>
+<div id="plot" style="width: 80%; height: 40%; margin: auto">
+</div>
+<div id="query_container" style="text-align: center">
+	<form id="plot_form" action="view_data.php?action=get_data" method="POST">
+	Plot:
+	<select id="item_names" name="item_id">
+		<option>Loading item names...</option>
+	</select>
+	<select id="function" name="function">
+		<option value="min">Minimum</option>
+		<option value="max">Maximum</option>
+		<option value="avg">Mean</option>
+		<option value="stddev">Standard Deviation</option>
+	</select>
+	<select id="parameter" name="parameter">
+		<option value="unitBuyout">Unit Buyout</option>
+		<option value="buyout">Buyout</option>
+		<option value="unitBid">Unit Bid</option>
+		<option value="bid">Bid</option>
+		<option value="quantity">Quantity</option>
+	</select>
+	&nbsp; Where:
+	<select id="condition_parameter" name="condition_parameter">
+		<option value="none">-No Condition-</option>
+		<option value="unitBuyout">Unit Buyout</option>
+		<option value="buyout">Buyout</option>
+		<option value="unitBid">Unit Bid</option>
+		<option value="bid">Bid</option>
+		<option value="quantity">Quantity</option>
+		<option value="last_time">Time Left</option>
+	</select>
+	<select id="comparison" class="comparison" name="comparison">
+		<option value="lt">&lt;</option>
+		<option value="gt">&gt;</option>
+		<option value="lte">&le;</option>
+		<option value="gte">&GreaterEqual;</option>
+		<option value="eq">=</option>
+		<option value="neq">!=</option>
+	</select>
+	<select id="time_select" class="comparison" name="last_time" style="display: none">
+		<option value="Short">Short</option>
+		<option value="Medium">Medium</option>
+		<option value="Long">Long</option>
+		<option value="Very long">Very long</option>
+	</select>
+	<span id="gold_entry" class="comparison"> Gold: <input id="gold" type="text" value="0" size="5" maxlength="6" name="gold"/> Silver: <input id="silver" type="text" value="0" maxlength="2" size="1" name="silver" /> Copper: <input id="copper" type="text" value="0" maxlength="2" size="1" name="copper"/>
+	</span>
+	<input id="quantity" class="comparison" type="text" value="0" maxlength="4" size="2" style="display: none" name="quantity" />
+	<input type="submit" id="plot_submit" value="Plot!" />
+	</form>
+</div>
+<div id="filters_container" style="text-align: center">
+	Filter: 
+	<select id="filter">
+		<option value="none">None</option>
+		<option value="sma" selected>Simple Moving Average</option>
+		<option value="ema">Exponential Moving Average</option>
+		<option value="dema">Double Exponential Moving Average</option>
+	</select>
+	<span id="length" class="filter">Length: <input id="length_inp" type="text" value="12" size="2" maxlength="3" /></span>
+	<span id="alpha" class="filter">Alpha: <input id="alpha_inp" type="text" value="0.2" size="2" maxlength="3" /></span>
+	| <label for="squash_outliers">Squash Outliers </label><input type="checkbox" id="squash_outliers" checked />
+	<span id="outliers">IQR's: <input id="iqrs" type="text" value="3" size="1" maxlength="2" /> Window: <input id="window" type="text" value="144" size="2" maxlength="3" /> Overlap: <input id="overlap" type="text" value="72" size="2" maxlength="3" /></span>
+	<button id="apply_filter">Filter!</button>
+</div>
+</body>
+
+</html>
