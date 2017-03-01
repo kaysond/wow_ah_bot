@@ -2,6 +2,8 @@
 wow\_ah\_bot is a simple bot by http://github.com/kaysond that executes searches of the auction house, optionally records the data, and optionally sends notifications when certain conditions are met. Included are a script to run the bot, a script to set up the database, and a php web page to visualize the collected data.
 Errors are handled through a custom exception, and while everything has been tested, there are likely some scenarios that are not yet handled explicitly. Enabling logging can help debug.
 
+Use at your own risk. Though use of wow_ah_bot is virtually undetectable, Blizzard may sanction your account for accessing the AH via an unofficial method.
+
 ## Features
 * Saves login session between executions
 * Attempts to re-login during operation when necessary
